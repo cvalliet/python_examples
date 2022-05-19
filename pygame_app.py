@@ -64,8 +64,12 @@ class TMovingObject(TObject):
             self._direction = step
 
     def move(self, step=1):
-        self._x += step * math.cos(self._direction)
-        self._y += step * math.sin(self._direction)
+        a = step * math.cos(self._direction)
+        b = step * math.sin(self._direction)
+        self._x += a
+        self._y += b
+
+        return a, b
 
 class TPygameApplication:
     def __init__(self, size=(800, 600)):
