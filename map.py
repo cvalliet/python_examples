@@ -16,9 +16,10 @@ from pygame.locals import *
 # VARIABLEs -----------------------------------------------------------------------------------------------------------
 
 FONT_NAME = 'Monospace'
-MAP_NAME = 'map2.png'
+MAP_NAME = 'map3.png'
 FONT_SIZE = 14
 ORIGIN = 0, 0
+MIDDLE = 320, 240
 SCREEN_SIZE = 640, 480
 SCALE = 2
 DISPLAY_SIZE = SCREEN_SIZE[0] // SCALE, SCREEN_SIZE[1] // SCALE
@@ -83,8 +84,8 @@ class Map:
 
     def display(self, surface, angle, position):
         # surface.blit(self._image, ORIGIN)
-        angle *= 120 / math.pi
-        surface.blit(pygame.transform.rotate(self._image, angle), position)
+        surface.blit(pygame.transform.rotate(self._image, math.degrees(angle)), ORIGIN)
+            
 
 
 class Protagonist:
@@ -97,13 +98,21 @@ class Protagonist:
 
     def move(self):
         keys = pygame.key.get_pressed()
+        mods = pygame.key.get_mods()
+        self._move = 0
 
+        if keys[K_q]:
+            self._angle = -math.pi / 2
+        if keys[K_d]:
+            self._angle = math.pi / 2
+        if keys[K_z]:
+            self._angle = math.pi
+        if keys[K_s]:
+            self._angle = 0
         if keys[K_LEFT]:
             self._angle += 0.01
-        elif keys[K_RIGHT]:
+        if keys[K_RIGHT]:
             self._angle -= 0.01
-
-        self._move = 0
         if keys[K_UP]:
             self._move = 1
         if keys[K_DOWN]:
@@ -143,7 +152,7 @@ if is_module_main():
     font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
     screen = pygame.display.set_mode(SCREEN_SIZE, HWSURFACE | DOUBLEBUF)
     display = pygame.Surface(DISPLAY_SIZE, HWSURFACE | DOUBLEBUF)
-    protagonist = Protagonist(ORIGIN, 20, 0)
+    protagonist = Protagonist(MIDDLE, 20, 0)
     map = Map(MAP_NAME)
 
     while running:
