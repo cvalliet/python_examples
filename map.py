@@ -57,7 +57,7 @@ def blit_rotate(surf, image, pos, originPos, angle):
     min_box    = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
     max_box    = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
 
-    # calculate the translation of the pivot 
+    # calculate the translation of the pivot
     pivot        = pygame.math.Vector2(originPos[0], -originPos[1])
     pivot_rotate = pivot.rotate(angle)
     pivot_move   = pivot_rotate - pivot
@@ -84,9 +84,9 @@ class Map:
 
     def display(self, surface, angle, position):
         # surface.blit(self._image, ORIGIN)
-        surface.blit(pygame.transform.rotate(self._image, math.degrees(angle)), ORIGIN)
-            
-
+        rotated = pygame.transform.rotate(self._image, math.degrees(angle))
+        origin = (surface.get_width() - rotated.get_width()) / 2, (surface.get_height() - rotated.get_height()) / 2,
+        surface.blit(rotated, origin)
 
 class Protagonist:
     def __init__(self, origin, length, angle):
@@ -162,7 +162,7 @@ if is_module_main():
             if event.type == QUIT:
                 running = False
                 break
-            
+
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False

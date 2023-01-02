@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-# *** NOT IMPORTABLE!!!
+# *** SCRIPT NOT IMPORTABLE!!!
 if __name__ != '__main__':
     import os
     raise Exception('This python script "%s" is not an import module!' % os.path.basename(__file__))
@@ -116,10 +116,10 @@ class TestApplication(TPygameApplication):
 
     def on_initialize(self):
         self._arrow = TMovingObject((200, 150))
-    
+
     def on_loop(self):
         self._display.fill('green')
-    
+
     def on_event(self, event):
         super().on_event(event)
 
