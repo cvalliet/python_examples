@@ -32,6 +32,7 @@ Map = [
 
 # FUNCTIONs -----------------------------------------------------------------------------------------------------------
 
+
 def vector2_length(v):
     return math.sqrt(v[0]*v[0] + v[1]*v[1])
 
@@ -67,13 +68,11 @@ def map_is_empty(map, map_size, block_size, position):
     return map[y][x] == ' '
 
 
+def text_draw(surface, text, position, font):
+    text_surface = font.render(text, True, 'white', 'black')
+    surface.blit(text_surface, position)
+
 # CLASSEs -------------------------------------------------------------------------------------------------------------
-
-
-class Player:
-    def __init__(self, position, direction):
-        self._position = position
-        self._direction = direction
 
 
 class PygameApplication:
@@ -107,10 +106,14 @@ class PygameApplication:
         plane = 0, 0.66
 
         map_surface = map_draw(Map, 10, 16)
+        #pygame.image.save(map_surface, "map.png")
 
+        dir = ''
+        map_show = False
         while (self._running):
             self._screen.fill('black')
-            self._screen.blit(map_surface, (0, 0))
+            if map_show:
+                self._screen.blit(map_surface, origin)
 
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -123,6 +126,25 @@ class PygameApplication:
             if keys[K_ESCAPE]:
                 self._running = False
                 break
+
+            if keys[K_n]:
+                direction = 0, -1
+                plane = -0.66, 0
+
+            if keys[K_s]:
+                direction = 0, 1
+                plane = 0.66, 0
+
+            if keys[K_e]:
+                direction = 1, 0
+                plane = 0, -0.66
+
+            if keys[K_w]:
+                direction = -1, 0
+                plane = 0, 0.66
+
+            if keys[K_m]:
+                map_show = not map_show
 
             if keys[K_RIGHT]:
                 direction = vector2_rotate(direction, ROTATION_SPEED)
@@ -144,21 +166,31 @@ class PygameApplication:
 
             pygame.draw.circle(self._screen, 'red', position, 5.)
 
+            # Field Of View
+            rays = []
+            WIDTH = 20
+            for column in range(1, WIDTH, 1):
+                x = 2 * column / WIDTH - 1
+                ray = vector2_add(direction, vector2_multiply(plane, x))
+                for length in range(0, 256, 1):
+                    next = vector2_multiply(ray, length)
+
+                    end = vector2_add(next, position)
+                    if not map_is_empty(Map, 10, 16, end):
+                        rays.append((end, length))
+                        break
+
+                pygame.draw.line(self._screen, 'magenta', position, end)
+
             # position + direction * 10 => display direction vector with a length or 10 pixels
             end = vector2_add(vector2_multiply(direction, 10), position)
             pygame.draw.line(self._screen, 'yellow', position, end)
-
-            # FOV
-            WIDTH = 320
-            for column in range(0, WIDTH):
-                x = 2 * column / WIDTH - 1
-                ray = vector2_add(direction, vector2_multiply(plane, x))
-                end = vector2_add(vector2_multiply(ray, 20), position)
-                pygame.draw.line(self._screen, 'magenta', position, end)
-
             pygame.transform.scale2x(self._screen, self._window)
 
             pygame.display.flip()
+
+            if keys[K_SPACE]:
+                pygame.image.save(self._screen, "screen.png")
 
             self._clock.tick(fps)
             self._frame += 1
@@ -171,8 +203,8 @@ class PygameApplication:
 PROGRAM_NAME = os.path.basename(sys.argv[0])
 FONT_NAME = 'Monospace'
 FONT_SIZE = 14
-WINDOW_SIZE = 640, 480
-SCREEN_SIZE = 320, 240
+WINDOW_SIZE = 640, 640
+SCREEN_SIZE = 320, 320
 FPS = 60
 
 
